@@ -13,4 +13,5 @@ Sandbox for quick design explorations and interactive prototypes. Everything her
 
 | Draft | Ticket | Status |
 |---|---|---|
+| [Reactivate deposit details](drafts/2026-10-reactivate-deposit-details/) | DSN-62 | In review |
 | [Crypto deposit selector](drafts/2026-10-deposit-selector/) | ENG-10847 | In review |

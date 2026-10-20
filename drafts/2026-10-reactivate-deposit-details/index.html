@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reactivate Deposit Details</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f4f5f8; --surface:#ffffff; --surface-2:#f8f9fb; --border:#e3e6ec; --border-strong:#cfd4dd;
+  --text:#1b1f2a; --muted:#6b7590; --label:#5f6b88;
+  --primary:#4f57d9; --primary-soft:#eef0ff;
+  --info-bg:#e8eefb; --info-text:#2d3a5c;
+  --warn-bg:#f8e9e4; --warn-text:#8a3a22; --warn-icon:#c8442f;
+  --ok-bg:#e3f4ec; --ok-text:#16613f; --ok:#1f8a5b;
+  --radius:10px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"DM Sans",system-ui,sans-serif;font-size:15px;line-height:1.45}
+button{font:inherit}
+header.top{max-width:960px;margin:0 auto;padding:24px 16px 0}
+.eyebrow{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+header.top h1{margin:4px 0 14px;font-size:22px}
+
+.scenario{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.seg{display:inline-flex;background:var(--surface);border:1px solid var(--border-strong);border-radius:999px;padding:3px}
+.seg button{border:0;background:none;border-radius:999px;padding:6px 14px;font-size:13px;font-weight:600;color:var(--label);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--primary);color:#fff}
+.btn{font-size:13px;font-weight:600;border-radius:999px;padding:7px 14px;border:1px solid var(--border-strong);background:var(--surface);color:var(--text);cursor:pointer}
+.caption{min-height:20px;font-size:13px;color:var(--primary);font-weight:500;margin:10px 0 12px}
+
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 48px}
+.app{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:0 1px 2px rgba(20,30,60,.04)}
+.appbar{display:flex;align-items:center;gap:14px;padding:16px 20px;border-bottom:1px solid var(--border)}
+.logo{width:28px;height:28px;border-radius:8px;background:var(--primary);color:#fff;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center}
+.appbar .co{padding-left:14px;border-left:1px solid var(--border);font-weight:500}
+.appbar .x{margin-left:auto;color:var(--muted);font-size:20px;line-height:1}
+.body{display:grid;grid-template-columns:200px 1fr;min-height:560px}
+.stepper{padding:28px 0 28px 20px}
+.stepper div{padding:8px 12px;color:var(--label);font-size:14px;border-left:2px solid transparent}
+.stepper div.on{border-left-color:var(--primary);background:var(--primary-soft);color:var(--text);font-weight:500}
+.main{padding:28px 24px 32px;max-width:560px;width:100%}
+.kicker{color:var(--muted);font-size:14px}
+.kicker b{color:var(--label)}
+h2{font-size:24px;margin:4px 0 18px}
+h3{font-size:18px;font-weight:600;margin:24px 0 10px}
+.lbl{display:block;font-size:14px;color:var(--label);margin-bottom:6px;font-weight:500}
+.hint{font-size:13px;color:var(--muted);margin-top:6px}
+
+.row{display:flex;align-items:center;gap:12px;border:1px solid var(--border);border-radius:12px;padding:14px 16px;background:var(--surface)}
+.row .grow{flex:1;min-width:0}
+.row .t{font-weight:500}
+.row .s{color:var(--muted);font-size:13px}
+.av{width:40px;height:40px;border-radius:50%;background:#6b7590;color:#fff;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;flex:none}
+.bank{width:40px;height:40px;border-radius:10px;background:#2f8f83;color:#fff;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;flex:none}
+.link{background:none;border:0;padding:0;color:var(--primary);font-weight:600;font-size:14px;cursor:pointer;white-space:nowrap}
+.select{display:flex;align-items:center;justify-content:space-between;border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px}
+.chev{width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:6px solid #4a5268}
+
+.pill{font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;white-space:nowrap}
+.pill.inactive{background:var(--warn-bg);color:var(--warn-text)}
+.pill.active{background:var(--ok-bg);color:var(--ok-text)}
+
+.banner{display:flex;gap:10px;margin-top:10px;padding:12px 14px;border-radius:var(--radius);font-size:14px}
+.banner .ic{flex:none;width:18px;height:18px;margin-top:1px}
+.banner.warn{background:var(--warn-bg);color:var(--warn-text)}
+.banner.ok{background:var(--ok-bg);color:var(--ok-text)}
+.banner.info{background:var(--info-bg);color:var(--info-text)}
+.banner .acts{display:flex;gap:16px;margin-top:6px}
+.banner .acts .link{font-size:14px}
+.banner .acts .link.quiet{color:var(--warn-text);font-weight:500}
+.reveal{animation:reveal .35s ease-out}
+@keyframes reveal{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+.nav{display:flex;justify-content:space-between;align-items:center;margin-top:28px}
+.back{background:none;border:0;font-weight:500;cursor:pointer;color:var(--text);font-size:15px}
+.primary{background:var(--primary);color:#fff;border:0;border-radius:10px;padding:12px 22px;font-weight:600;font-size:15px;cursor:pointer}
+.primary:disabled{background:#c5c9ee;cursor:not-allowed}
+.secondary{background:var(--surface);color:var(--text);border:1px solid var(--border-strong);border-radius:10px;padding:11px 18px;font-weight:600;font-size:15px;cursor:pointer}
+
+.amount{display:flex;align-items:center;border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;font-size:22px;font-weight:600;font-variant-numeric:tabular-nums}
+.amount span{color:var(--muted);margin-right:6px}
+
+/* recipient page */
+.rp{padding:24px}
+.crumb{font-size:13px;color:var(--muted)}
+.rp-head{display:flex;align-items:center;gap:14px;margin:14px 0 22px}
+.rp-head .av{width:52px;height:52px;font-size:17px}
+.rp-head h2{margin:0;font-size:22px}
+.rp-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:24px}
+.sec-t{font-size:14px;font-weight:600;color:var(--label);text-transform:uppercase;letter-spacing:.05em;margin:0 0 10px}
+.stack{display:flex;flex-direction:column;gap:10px}
+.timeline{border:1px solid var(--border);border-radius:12px;padding:6px 16px}
+.ev{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);font-size:14px}
+.ev:last-child{border-bottom:0}
+.dot{width:8px;height:8px;border-radius:50%;margin-top:7px;flex:none;background:var(--border-strong)}
+.dot.bad{background:var(--warn-icon)}.dot.good{background:var(--ok)}
+.ev .d{color:var(--muted);font-size:12px}
+
+/* modal */
+.scrim{position:fixed;inset:0;background:rgba(20,26,40,.42);display:none;align-items:center;justify-content:center;padding:16px;z-index:50}
+.scrim.open{display:flex}
+.modal{background:var(--surface);border-radius:16px;width:100%;max-width:480px;max-height:calc(100vh - 32px);overflow:auto;padding:22px;animation:reveal .25s ease-out}
+.modal h4{margin:0 0 4px;font-size:19px}
+.modal .sub{color:var(--muted);font-size:14px;margin:0 0 16px}
+.mh{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.close{background:none;border:0;font-size:22px;line-height:1;color:var(--muted);cursor:pointer}
+.kv{border:1px solid var(--border);border-radius:12px;padding:4px 14px;margin-bottom:16px}
+.kv div{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--border);font-size:14px}
+.kv div:last-child{border-bottom:0}
+.kv dt,.kv .k{color:var(--muted)}
+.ret{border:1px solid var(--border);border-radius:12px;margin-bottom:16px}
+.ret .r{display:grid;grid-template-columns:1fr auto;gap:2px 12px;padding:10px 14px;border-bottom:1px solid var(--border);font-size:14px}
+.ret .r:last-child{border-bottom:0}
+.ret .money{font-variant-numeric:tabular-nums;font-weight:600;text-align:right}
+.ret .why{color:var(--warn-text);font-size:13px}
+.ret .d{color:var(--muted);font-size:13px;text-align:right}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:14px;margin:4px 0 18px;cursor:pointer}
+.check input{width:18px;height:18px;margin:1px 0 0;accent-color:var(--primary);flex:none}
+.mact{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+.mact>button{white-space:nowrap}
+.field{margin-bottom:14px}
+.input{width:100%;border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;font:inherit;font-variant-numeric:tabular-nums}
+.input:focus{outline:0;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft)}
+.err{color:var(--warn-icon);font-size:13px;margin-top:5px;min-height:0}
+.chip{display:inline-flex;align-items:center;gap:8px;margin-top:8px;padding:5px 12px 5px 5px;border-radius:999px;background:var(--surface-2);border:1px solid var(--border);font-size:13px;font-weight:500}
+.chip .bank{width:24px;height:24px;font-size:9px;border-radius:50%}
+
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#1b1f2a;color:#fff;padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:60;max-width:calc(100% - 32px)}
+.toast.show{opacity:1}
+
+@media (max-width:760px){
+  .body{grid-template-columns:1fr}
+  .stepper{display:none}
+  .main{padding:20px 16px 24px}
+  .rp{padding:20px 16px}
+  .rp-grid{grid-template-columns:1fr}
+  .row{padding:12px}
+  .row .link .lng{display:none}
+  .scrim{align-items:flex-end;padding:0}
+  .modal{border-radius:16px 16px 0 0;max-height:92vh}
+  .mact>button{flex:1;padding-left:12px;padding-right:12px}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="eyebrow">DSN-62 · Sample data</div>
+  <h1>Reactivate deposit details</h1>
+  <div class="scenario">
+    <div class="seg" role="group" aria-label="Surface">
+      <button id="vSend" aria-pressed="true">Send flow</button>
+      <button id="vRec" aria-pressed="false">Recipient page</button>
+      <button id="vPay" aria-pressed="false">Payroll details</button>
+    </div>
+    <button class="btn" id="reset">Reset</button>
+  </div>
+  <div class="caption" id="caption"></div>
+</header>
+
+<div class="wrap">
+  <div class="app">
+    <div class="appbar"><div class="logo">O</div><div class="co">Sample Co.</div><div class="x">×</div></div>
+    <div id="view"></div>
+  </div>
+</div>
+
+<div class="scrim" id="scrim"><div class="modal" id="modal" role="dialog" aria-modal="true"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const WARN_IC = '<svg class="ic" viewBox="0 0 20 20" fill="none"><path d="M10 3 2.5 16.5h15L10 3Z" stroke="#c8442f" stroke-width="1.6" stroke-linejoin="round"/><path d="M10 8.2v3.6" stroke="#c8442f" stroke-width="1.6" stroke-linecap="round"/><circle cx="10" cy="14" r=".9" fill="#c8442f"/></svg>';
+const OK_IC = '<svg class="ic" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="#1f8a5b" stroke-width="1.6"/><path d="m6.8 10.2 2.2 2.2 4.2-4.4" stroke="#1f8a5b" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const INFO_IC = '<svg class="ic" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="#4f57d9" stroke-width="1.6"/><path d="M10 9v4.5" stroke="#4f57d9" stroke-width="1.6" stroke-linecap="round"/><circle cx="10" cy="6.6" r=".9" fill="#4f57d9"/></svg>';
+
+const RECIP = {name:'Lighthouse Properties', ini:'LP', addr:'100 Sample St, Austin, US', email:'billing@lighthouse.example'};
+const RETURNS = [
+  {date:'Oct 14, 2026', amt:'$1,250.00', code:'R03', why:'No account found'},
+  {date:'Sep 30, 2026', amt:'$1,250.00', code:'R03', why:'No account found'}
+];
+const BANKS = {'1':'First Sample Bank','2':'Harbor Sample Bank','0':'Sample Credit Union'};
+
+let S;
+function fresh(){
+  return {view:'send', step:'dest', status:'inactive', dismissed:{send:false,rec:false}, justChanged:null,
+    acct:{bank:'First Sample Bank', ini:'FS', routing:'110000000', last4:'0255', type:'Business checking'},
+    events:[
+      {t:'Account paused after 2 returned payments', d:'Oct 14, 2026', k:'bad'},
+      {t:'Payment returned · R03 No account found · $1,250.00', d:'Oct 14, 2026', k:'bad'},
+      {t:'Payment returned · R03 No account found · $1,250.00', d:'Sep 30, 2026', k:'bad'},
+      {t:'Bank account added', d:'Sep 02, 2026', k:''}
+    ]};
+}
+S = fresh();
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const mask = n => '••' + n;
+
+function caption(){
+  if(S.view==='pay'){ $('#caption').textContent='Payroll details: placeholder until content is defined.'; return; }
+  const c = S.status === 'inactive'
+    ? (S.view==='send' ? 'Account is paused. Dismiss and continue (soft warning), or open View details to reactivate.' : 'Same paused state on the recipient page. View details to reactivate.')
+    : (S.justChanged==='updated' ? 'Details updated. Account is active again in both places.' : 'Reactivated. State is shared between the send flow and the recipient page.');
+  $('#caption').textContent = c;
+}
+
+function acctRow(withLink){
+  const inactive = S.status==='inactive';
+  return `<div class="row">
+    <div class="bank">${S.acct.ini}</div>
+    <div class="grow"><div class="t">${esc(S.acct.bank)}${inactive?'':' <span class="pill active">Active</span>'}</div>
+    <div class="s">${S.acct.type} ${mask(S.acct.last4)}</div></div>
+    ${withLink?`<button class="link" data-act="review">View<span class="lng"> details</span> ›</button>`:''}
+  </div>`;
+}
+
+function banner(ctx){
+  if(S.status==='inactive'){
+    if(S.dismissed[ctx]) return '';
+    return `<div class="banner warn reveal">${WARN_IC}<div>
+      <div>Payments to this account were returned 2 times, so we paused it. Confirm the details with ${esc(RECIP.name)} before you send.</div>
+      <div class="acts"><button class="link" data-act="dismiss" data-ctx="${ctx}">Dismiss</button></div>
+    </div></div>`;
+  }
+  if(S.justChanged){
+    const msg = S.justChanged==='updated' ? 'Details updated. This account is active again.' : 'Account reactivated. If a payment is returned again, we\'ll pause it.';
+    return `<div class="banner ok reveal">${OK_IC}<div>${msg}</div></div>`;
+  }
+  return '';
+}
+
+function sendView(){
+  const steps = ['Recipient','Recipient details','Destination details','Amount','Summary'];
+  const on = S.step==='dest' ? 2 : 3;
+  const stepper = `<nav class="stepper">${steps.map((s,i)=>`<div class="${i===on?'on':''}">${s}</div>`).join('')}</nav>`;
+  let main;
+  if(S.step==='dest'){
+    main = `<div class="kicker">Payment to <b>${esc(RECIP.name)}.</b></div>
+      <h2>Destination details</h2>
+      <div class="row"><div class="av">${RECIP.ini}</div><div class="grow"><div class="t">${esc(RECIP.name)}</div><div class="s">${esc(RECIP.addr)}</div></div><button class="link" data-act="torec">View<span class="lng"> details</span> ›</button></div>
+      <h3>Payment method</h3>
+      <div class="select"><span>ACH</span><span class="chev"></span></div>
+      <div class="hint">1–3 business days · No fee</div>
+      <h3>Bank details</h3>
+      ${acctRow(true)}
+      ${banner('send')}
+      <div class="nav"><button class="back">‹ Back</button><button class="primary" data-act="next">Next ›</button></div>`;
+  } else {
+    const paused = S.status==='inactive';
+    main = `<div class="kicker">Payment to <b>${esc(RECIP.name)}.</b></div>
+      <h2>Amount</h2>
+      <label class="lbl">You send</label>
+      <div class="amount"><span>$</span>1,250.00</div>
+      ${paused?`<div class="banner info reveal">${INFO_IC}<div>Sending to a paused account. We'll reactivate it when you send this payment. If it's returned again, it pauses again.</div></div>`:''}
+      <div class="nav"><button class="back" data-act="backdest">‹ Back</button><button class="primary" data-act="endnote">Next ›</button></div>`;
+  }
+  return `<div class="body">${stepper}<div class="main">${main}</div></div>`;
+}
+
+function recView(){
+  const inactive = S.status==='inactive';
+  return `<div class="rp">
+    <div class="crumb">Recipients / ${esc(RECIP.name)}</div>
+    <div class="rp-head"><div class="av">${RECIP.ini}</div><div><h2>${esc(RECIP.name)}</h2><div class="s" style="color:var(--muted);font-size:14px">${esc(RECIP.email)}</div></div></div>
+    <div class="rp-grid">
+      <div>
+        <p class="sec-t">Payment accounts</p>
+        <div class="stack">
+          <div>${acctRow(true)}${banner('rec')}
+          </div>
+          <div class="row"><div class="bank" style="background:#7a5bc7">HS</div><div class="grow"><div class="t">Harbor Sample Bank <span class="pill active">Active</span></div><div class="s">Wire ${mask('8890')}</div></div></div>
+        </div>
+      </div>
+      <div>
+        <p class="sec-t">Activity</p>
+        <div class="timeline">${S.events.map(e=>`<div class="ev"><span class="dot ${e.k}"></span><div><div>${esc(e.t)}</div><div class="d">${e.d}</div></div></div>`).join('')}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function payView(){
+  return `<div class="rp"><h2>Payroll details</h2><div class="banner info">${INFO_IC}<div>Placeholder. Content coming next.</div></div></div>`;
+}
+
+function render(){
+  $('#view').innerHTML = S.view==='send' ? sendView() : S.view==='rec' ? recView() : payView();
+  $('#vPay').setAttribute('aria-pressed', S.view==='pay');
+  $('#vSend').setAttribute('aria-pressed', S.view==='send');
+  $('#vRec').setAttribute('aria-pressed', S.view==='rec');
+  caption();
+}
+
+/* modal */
+function openModal(html){ $('#modal').innerHTML = html; $('#scrim').classList.add('open'); }
+function closeModal(){ $('#scrim').classList.remove('open'); }
+
+function reviewModal(){
+  const inactive = S.status==='inactive';
+  openModal(`<div class="mh"><div><h4>${inactive?'Paused bank account':'Bank account'}</h4>
+    <p class="sub">${inactive?`Check these details with ${esc(RECIP.name)}. If they're right, reactivate. If not, update them.`:'This account is active.'}</p></div>
+    <button class="close" data-act="close" aria-label="Close">×</button></div>
+    ${inactive?`<p class="sec-t">Returned payments</p><div class="ret">${RETURNS.map(r=>`<div class="r"><div>${r.code} · <span class="why">${r.why}</span></div><div class="money">${r.amt}</div><div class="d" style="text-align:left">Returned to your account</div><div class="d">${r.date}</div></div>`).join('')}</div>`:''}
+    <p class="sec-t">Current details</p>
+    <div class="kv">
+      <div><span class="k">Bank</span><span>${esc(S.acct.bank)}</span></div>
+      <div><span class="k">Routing number</span><span>${S.acct.routing}</span></div>
+      <div><span class="k">Account number</span><span>${mask(S.acct.last4)}</span></div>
+      <div><span class="k">Account type</span><span>${S.acct.type}</span></div>
+    </div>
+    ${inactive?`<label class="check"><input type="checkbox" id="confirm"> I confirmed these details with ${esc(RECIP.name)}</label>
+    <div class="mact"><button class="secondary" data-act="edit">Update details</button><button class="primary" id="reactBtn" data-act="reactivate" disabled>Reactivate</button></div>`
+    :`<div class="mact"><button class="secondary" data-act="close">Close</button></div>`}`);
+  const cb = $('#confirm');
+  if(cb) cb.addEventListener('change', ()=>{ $('#reactBtn').disabled = !cb.checked; });
+}
+
+function editModal(){
+  openModal(`<div class="mh"><div><h4>Update bank details</h4><p class="sub">Saving new details reactivates this account. The old details stay on record.</p></div>
+    <button class="close" data-act="close" aria-label="Close">×</button></div>
+    <div class="field"><label class="lbl" for="rt">Routing number</label><input class="input" id="rt" inputmode="numeric" maxlength="9" value="${S.acct.routing}">
+      <div id="bankChip"></div><div class="err" id="rtErr"></div></div>
+    <div class="field"><label class="lbl" for="an">Account number</label><input class="input" id="an" inputmode="numeric" maxlength="17" placeholder="Enter full account number"><div class="err" id="anErr"></div></div>
+    <div class="field"><label class="lbl" for="at">Account type</label>
+      <select class="input" id="at"><option>Business checking</option><option>Business savings</option><option>Personal checking</option></select></div>
+    <div class="mact"><button class="secondary" data-act="review">Back</button><button class="primary" id="saveBtn" data-act="save" disabled>Save and reactivate</button></div>`);
+  const rt=$('#rt'), an=$('#an');
+  const validate=()=>{
+    rt.value=rt.value.replace(/\D/g,''); an.value=an.value.replace(/\D/g,'');
+    const rOk=rt.value.length===9, aOk=an.value.length>=4;
+    const bank = rOk ? (BANKS[rt.value[0]]||'Sample Savings Bank') : null;
+    $('#bankChip').innerHTML = bank?`<span class="chip"><span class="bank">${bank.split(' ').map(w=>w[0]).slice(0,2).join('')}</span>${bank}</span>`:'';
+    $('#rtErr').textContent = rt.value && !rOk ? 'Routing numbers are 9 digits.' : '';
+    const same = rOk && aOk && rt.value===S.acct.routing && an.value.slice(-4)===S.acct.last4;
+    $('#anErr').textContent = same ? 'These match the paused details. Use Reactivate instead, or enter different details.' : '';
+    $('#saveBtn').disabled = !(rOk && aOk && !same);
+  };
+  rt.addEventListener('input',validate); an.addEventListener('input',validate); validate();
+  an.focus();
+}
+
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toast.h); toast.h=setTimeout(()=>t.classList.remove('show'),2600); }
+
+function reactivate(kind){
+  S.status='active'; S.justChanged=kind;
+  S.events.unshift({t: kind==='updated'?'Bank details updated · account active':'Reactivated by you · details confirmed', d:'Today', k:'good'});
+  closeModal(); render();
+  toast(kind==='updated'?'Bank details updated':'Account reactivated');
+}
+
+document.addEventListener('click', e=>{
+  const b = e.target.closest('[data-act]'); if(!b) return;
+  const a = b.dataset.act;
+  if(a==='review') reviewModal();
+  else if(a==='edit') editModal();
+  else if(a==='close') closeModal();
+  else if(a==='dismiss'){ S.dismissed[b.dataset.ctx]=true; render(); }
+  else if(a==='reactivate') reactivate('confirmed');
+  else if(a==='save'){
+    const rt=$('#rt').value, an=$('#an').value, bank=BANKS[rt[0]]||'Sample Savings Bank';
+    S.acct={bank, ini:bank.split(' ').map(w=>w[0]).slice(0,2).join(''), routing:rt, last4:an.slice(-4), type:$('#at').value};
+    reactivate('updated');
+  }
+  else if(a==='next'){ S.step='amount'; render(); }
+  else if(a==='backdest'){ S.step='dest'; render(); }
+  else if(a==='endnote') toast('Draft ends here. Summary step unchanged.');
+  else if(a==='torec'){ S.view='rec'; render(); }
+});
+$('#scrim').addEventListener('click', e=>{ if(e.target.id==='scrim') closeModal(); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
+$('#vSend').onclick=()=>{ S.view='send'; render(); };
+$('#vRec').onclick=()=>{ S.view='rec'; render(); };
+$('#vPay').onclick=()=>{ S.view='pay'; render(); };
+$('#reset').onclick=()=>{ S=fresh(); closeModal(); $('#toast').classList.remove('show'); render(); };
+render();
+</script>
+</body>
+</html>
