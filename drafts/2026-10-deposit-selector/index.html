@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Deposit Selector Draft</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f4f5f8; --surface:#ffffff; --surface-2:#f8f9fb; --border:#e3e6ec; --border-strong:#cfd4dd;
+  --text:#1b1f2a; --muted:#6b7590; --label:#5f6b88;
+  --primary:#4f57d9; --primary-soft:#eef0ff;
+  --info-bg:#e8eefb; --info-text:#2d3a5c;
+  --danger-bg:#f6dcdc; --danger-text:#c8442f;
+  --amber-bg:#fff4dc; --amber-text:#8a5a00;
+  --ok:#1f8a5b;
+  --radius:10px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"DM Sans",system-ui,sans-serif;font-size:15px;line-height:1.45}
+.wrap{max-width:472px;margin:0 auto;padding:24px 16px 48px}
+header.top{max-width:472px;margin:0 auto;padding:24px 16px 0}
+header.top .eyebrow{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+header.top h1{margin:4px 0 0;font-size:22px}
+
+/* scenario bar */
+.scenario{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.btn{font:inherit;font-size:13px;font-weight:600;border-radius:999px;padding:7px 14px;border:1px solid var(--border-strong);background:var(--surface);color:var(--text);cursor:pointer}
+.btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}
+.caption{min-height:20px;font-size:13px;color:var(--primary);font-weight:500;margin-bottom:10px}
+
+/* prototype card */
+.proto{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px;box-shadow:0 1px 2px rgba(20,30,60,.04)}
+.proto h2{margin:0 0 18px;font-size:20px}
+.field{margin-bottom:16px;position:relative}
+.field label{display:block;font-size:14px;color:var(--label);margin-bottom:6px;font-weight:500}
+.static-select{display:flex;align-items:center;gap:10px;border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px}
+.static-select .acct{width:30px;height:30px;border-radius:6px;background:var(--surface-2);border:1px solid var(--border)}
+.static-select small{display:block;color:var(--muted);font-size:12px}
+
+.cb{display:flex;align-items:center;gap:10px;border:1px solid var(--border);border-radius:var(--radius);padding:0 12px;height:48px;background:var(--surface);transition:border-color .15s, box-shadow .15s}
+.cb:focus-within{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft)}
+.cb.disabled{background:var(--surface-2);color:var(--muted)}
+.cb input{flex:1;border:0;outline:0;font:inherit;background:transparent;color:inherit;min-width:0}
+.cb input::placeholder{color:#9aa3b8}
+.cb .chev{width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:6px solid #4a5268;flex:none}
+.cb.disabled .chev{border-top-color:#b8bfcf}
+.cb .slot{width:22px;height:22px;flex:none;display:none}
+.cb.has-value .slot{display:block}
+
+.list{position:absolute;left:0;right:0;top:calc(100% + 4px);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 10px 30px rgba(20,30,60,.12);max-height:280px;overflow:auto;z-index:20;padding:4px;display:none}
+.list.open{display:block}
+.opt{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;cursor:pointer}
+.opt[aria-selected="true"],.opt:hover{background:var(--primary-soft)}
+.opt .name{font-weight:500}
+.opt .sub{color:var(--muted);font-size:12px;margin-left:2px}
+.opt .tags{margin-left:auto;display:flex;gap:4px}
+.tag{font-size:11px;font-weight:600;padding:2px 7px;border-radius:999px;background:var(--surface-2);border:1px solid var(--border);color:var(--label)}
+.tag.hit{background:var(--primary);border-color:var(--primary);color:#fff}
+.opt .check{margin-left:auto;color:var(--primary);font-weight:700}
+.empty-opt{padding:12px 10px;color:var(--muted);font-size:13px}
+
+.ico{width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:9px;font-weight:700;flex:none;letter-spacing:.02em}
+.ico.sq{border-radius:6px}
+
+.note{display:none;margin-top:8px;font-size:13px;background:var(--amber-bg);color:var(--amber-text);padding:8px 10px;border-radius:8px}
+.note.show{display:block}
+
+.details-h{font-size:20px;margin:24px 0 12px;font-weight:600}
+.placeholder{border:1.5px dashed var(--border-strong);border-radius:12px;padding:28px 18px;text-align:center;color:var(--muted);font-size:14px;min-height:180px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+.placeholder .lock{width:34px;height:34px;border-radius:50%;background:var(--surface-2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center}
+
+.card{border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.card.reveal{animation:reveal .45s ease-out}
+@keyframes reveal{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.pair{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:14px 16px;background:var(--primary-soft);border-bottom:1px solid var(--border)}
+.pair .lbl{font-size:12px;color:var(--label);width:100%;font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.pair .val{display:flex;align-items:center;gap:6px;font-weight:700;font-size:17px}
+.pair .on{color:var(--muted);font-weight:500}
+.card .body{display:grid;grid-template-columns:1fr auto;gap:16px;padding:16px;align-items:start}
+.addr-l{font-size:13px;color:var(--label);margin-bottom:4px}
+.addr{font-family:"DM Mono",monospace;font-size:13.5px;word-break:break-all}
+.copy{margin-top:10px;font:inherit;font-size:13px;font-weight:600;color:var(--primary);background:none;border:1px solid var(--border);padding:6px 12px;border-radius:999px;cursor:pointer}
+.qr{width:112px;height:112px}
+.info{margin-top:12px;background:var(--info-bg);color:var(--info-text);padding:10px 12px;border-radius:10px;font-size:14px}
+.warn{margin-top:10px;background:var(--danger-bg);color:var(--danger-text);padding:10px 12px;border-radius:10px;font-size:14px;display:flex;gap:10px}
+.warn b{font-weight:700}
+
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="eyebrow">ENG-10847 · Draft, sample data</div>
+  <h1>Crypto deposit selector</h1>
+</header>
+
+<div class="wrap">
+  <!-- PROTOTYPE -->
+  <section>
+    <div class="scenario">
+      <button class="btn primary" id="playBtn">▶ Replay Chris's scenario</button>
+      <button class="btn" id="resetBtn">Reset</button>
+    </div>
+    <div class="caption" id="caption">Try it: search "usdt" or "arb" in Network.</div>
+
+    <div class="proto">
+      <h2>Deposit crypto</h2>
+
+      <div class="field">
+        <label>Depositing to</label>
+        <div class="static-select"><span class="acct"></span><div>Main account<small>Sample account</small></div><span style="margin-left:auto" class="chev"></span></div>
+      </div>
+
+      <div class="field" id="netField">
+        <label for="netInput">Network</label>
+        <div class="cb" id="netBox">
+          <span class="slot" id="netSlot"></span>
+          <input id="netInput" role="combobox" aria-expanded="false" aria-controls="netList" aria-autocomplete="list" placeholder="Search network or token" autocomplete="off">
+          <span class="chev"></span>
+        </div>
+        <div class="list" id="netList" role="listbox"></div>
+      </div>
+
+      <div class="field" id="tokField">
+        <label for="tokInput">Token</label>
+        <div class="cb disabled" id="tokBox">
+          <span class="slot" id="tokSlot"></span>
+          <input id="tokInput" role="combobox" aria-expanded="false" aria-controls="tokList" aria-autocomplete="list" placeholder="Pick a network first" autocomplete="off" disabled>
+          <span class="chev"></span>
+        </div>
+        <div class="list" id="tokList" role="listbox"></div>
+        <div class="note" id="tokNote" role="status"></div>
+      </div>
+
+      <div class="details-h">Crypto deposit details</div>
+      <div id="details"></div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+const TOKENS = {
+  USDC:{name:'USD Coin',color:'#2775CA'},
+  USDT:{name:'Tether USD',color:'#26A17B'}
+};
+const NETWORKS = [
+  {id:'ethereum',name:'Ethereum',abbr:'ETH',color:'#627EEA',tokens:['USDC','USDT'],aliases:['eth','erc20']},
+  {id:'arbitrum',name:'Arbitrum',abbr:'ARB',color:'#28A0F0',tokens:['USDC'],aliases:['arb']},
+  {id:'base',name:'Base',abbr:'BASE',color:'#0052FF',tokens:['USDC'],aliases:[]},
+  {id:'polygon',name:'Polygon',abbr:'POL',color:'#8247E5',tokens:['USDC','USDT'],aliases:['matic','pol']},
+  {id:'avalanche',name:'Avalanche C-Chain',abbr:'AVAX',color:'#E84142',tokens:['USDC'],aliases:['avax']},
+  {id:'solana',name:'Solana',abbr:'SOL',color:'#0f9f8f',tokens:['USDC','USDT'],aliases:['sol','spl']},
+  {id:'tron',name:'Tron',abbr:'TRX',color:'#C4001F',tokens:['USDT'],aliases:['trx','trc20']},
+  {id:'tempo',name:'Tempo',abbr:'TMP',color:'#111827',tokens:['USDC'],aliases:[]}
+];
+const byId = id => NETWORKS.find(n=>n.id===id);
+const state = {network:null, token:null, note:null, revealKey:null};
+
+function icon(label,color,sq){return `<span class="ico${sq?' sq':''}" style="background:${color}">${label.slice(0,4)}</span>`}
+function netIcon(n){return icon(n.abbr.slice(0,3),n.color,true)}
+function tokIcon(t){return icon(t==='USDC'?'$':'₮',TOKENS[t].color,false)}
+
+/* deterministic sample data */
+function hash(s){let h=2166136261;for(const c of s){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
+function rng(seed){return()=>{seed=(Math.imul(seed^seed>>>15,1|seed)+0x6D2B79F5)>>>0;return seed/4294967296}}
+function sampleAddress(net,tok){
+  const r=rng(hash(net+tok));
+  if(net==='solana'){const a='123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';return Array.from({length:44},()=>a[Math.floor(r()*a.length)]).join('')}
+  if(net==='tron'){const a='123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';return 'T'+Array.from({length:33},()=>a[Math.floor(r()*a.length)]).join('')}
+  return '0x'+Array.from({length:40},()=>'0123456789abcdef'[Math.floor(r()*16)]).join('');
+}
+function sampleQR(seedStr){
+  const n=25,r=rng(hash(seedStr)),s=112/n;let rects='';
+  const finder=(x,y)=>`<rect x="${x*s}" y="${y*s}" width="${7*s}" height="${7*s}" fill="#111"/><rect x="${(x+1)*s}" y="${(y+1)*s}" width="${5*s}" height="${5*s}" fill="#fff"/><rect x="${(x+2)*s}" y="${(y+2)*s}" width="${3*s}" height="${3*s}" fill="#111"/>`;
+  const inF=(x,y)=>(x<8&&y<8)||(x>n-9&&y<8)||(x<8&&y>n-9);
+  for(let y=0;y<n;y++)for(let x=0;x<n;x++){if(!inF(x,y)&&r()>.52)rects+=`<rect x="${x*s}" y="${y*s}" width="${s}" height="${s}" fill="#111"/>`}
+  return `<svg class="qr" viewBox="0 0 112 112" role="img" aria-label="Sample QR code"><rect width="112" height="112" fill="#fff"/>${rects}${finder(0,0)}${finder(n-7,0)}${finder(0,n-7)}</svg>`;
+}
+
+/* ---------- combobox ---------- */
+function makeCombo({input,list,box,getOptions,renderOption,onPick}){
+  let open=false, active=0, dirty=false, opts=[];
+  function draw(){
+    const q = dirty ? input.value.trim().toLowerCase() : '';
+    opts = getOptions(q);
+    if(!opts.length){list.innerHTML=`<div class="empty-opt">No match for "${escapeHtml(input.value)}"</div>`;return}
+    active=Math.min(active,opts.length-1);
+    list.innerHTML=opts.map((o,i)=>`<div class="opt" role="option" id="${list.id}-${i}" data-i="${i}" aria-selected="${i===active}">${renderOption(o,q)}</div>`).join('');
+    input.setAttribute('aria-activedescendant',`${list.id}-${active}`);
+  }
+  function show(){if(input.disabled)return;open=true;list.classList.add('open');input.setAttribute('aria-expanded','true');draw()}
+  function hide(){open=false;dirty=false;list.classList.remove('open');input.setAttribute('aria-expanded','false');render()}
+  input.addEventListener('focus',()=>{input.select();active=0;show()});
+  input.addEventListener('input',()=>{dirty=true;active=0;show()});
+  input.addEventListener('keydown',e=>{
+    if(e.key==='ArrowDown'){e.preventDefault();if(!open)show();active=Math.min(active+1,opts.length-1);draw()}
+    else if(e.key==='ArrowUp'){e.preventDefault();active=Math.max(active-1,0);draw()}
+    else if(e.key==='Enter'){e.preventDefault();if(open&&opts[active]){onPick(opts[active]);input.blur();hide()}}
+    else if(e.key==='Escape'){input.blur();hide()}
+  });
+  list.addEventListener('mousedown',e=>{const el=e.target.closest('.opt');if(!el)return;e.preventDefault();onPick(opts[+el.dataset.i]);input.blur();hide()});
+  box.addEventListener('mousedown',e=>{if(e.target!==input&&!input.disabled){e.preventDefault();input.focus()}});
+  document.addEventListener('mousedown',e=>{if(open&&!list.contains(e.target)&&!box.contains(e.target))hide()});
+  return {hide};
+}
+function escapeHtml(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+
+const $=id=>document.getElementById(id);
+const netInput=$('netInput'), tokInput=$('tokInput');
+
+makeCombo({
+  input:netInput,list:$('netList'),box:$('netBox'),
+  getOptions:q=>NETWORKS.filter(n=>!q||n.name.toLowerCase().includes(q)||n.aliases.some(a=>a.startsWith(q))||n.tokens.some(t=>t.toLowerCase().includes(q)||TOKENS[t].name.toLowerCase().includes(q))),
+  renderOption:(n,q)=>`${netIcon(n)}<span class="name">${n.name}</span><span class="tags">${n.tokens.map(t=>`<span class="tag${q&&(t.toLowerCase().includes(q)||TOKENS[t].name.toLowerCase().includes(q))?' hit':''}">${t}</span>`).join('')}</span>`,
+  onPick:n=>setNetwork(n.id)
+});
+makeCombo({
+  input:tokInput,list:$('tokList'),box:$('tokBox'),
+  getOptions:q=>{const n=byId(state.network);if(!n)return[];return n.tokens.filter(t=>!q||t.toLowerCase().includes(q)||TOKENS[t].name.toLowerCase().includes(q))},
+  renderOption:t=>`${tokIcon(t)}<span class="name">${t}</span><span class="sub">${TOKENS[t].name}</span>${state.token===t?'<span class="check">✓</span>':''}`,
+  onPick:t=>setToken(t)
+});
+
+function setNetwork(id){
+  if(state.network===id)return;
+  const prev=state.token, n=byId(id);
+  state.network=id; state.token=null;
+  state.note = !prev ? null
+    : n.tokens.includes(prev) ? `Network changed to ${n.name}. Pick the token again to confirm.`
+    : `${prev} isn't available on ${n.name}. Pick a token to see the address.`;
+  render();
+}
+function setToken(t){state.token=t;state.note=null;render()}
+
+function render(){
+  const n=byId(state.network);
+  // network field
+  if(document.activeElement!==netInput) netInput.value=n?n.name:'';
+  $('netSlot').innerHTML=n?netIcon(n):''; $('netBox').classList.toggle('has-value',!!n);
+  // token field
+  tokInput.disabled=!n; $('tokBox').classList.toggle('disabled',!n);
+  tokInput.placeholder=!n?'Pick a network first':`Select token (${n.tokens.length} on ${n.name})`;
+  if(document.activeElement!==tokInput) tokInput.value=state.token||'';
+  $('tokSlot').innerHTML=state.token?tokIcon(state.token):''; $('tokBox').classList.toggle('has-value',!!state.token);
+  // note
+  $('tokNote').textContent=state.note||''; $('tokNote').classList.toggle('show',!!state.note);
+  // details
+  const d=$('details');
+  if(!n||!state.token){
+    state.revealKey=null;
+    d.innerHTML=`<div class="placeholder"><span class="lock"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b7590" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0 0 4h14a2 2 0 0 1 2 2v3"/><path d="M3 5v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3"/><path d="M21 12h-4a2 2 0 0 0 0 4h4z"/></svg></span>${!n?'Pick a network and a token to see your deposit address.':`Pick a token on ${n.name} to see your deposit address.`}</div>`;
+    return;
+  }
+  const key=n.id+state.token;
+  if(state.revealKey===key)return;
+  state.revealKey=key;
+  const addr=sampleAddress(n.id,state.token);
+  d.innerHTML=`<div class="card reveal">
+    <div class="pair"><span class="lbl">Send only</span><span class="val">${tokIcon(state.token)} ${state.token}</span><span class="on">on</span><span class="val">${netIcon(n)} ${n.name}</span></div>
+    <div class="body">
+      <div><div class="addr-l">Wallet address</div><div class="addr">${addr}</div><button class="copy" id="copyBtn">Copy address</button></div>
+      ${sampleQR(key)}
+    </div>
+  </div>
+  <div class="info">Minimum deposit: <b>10.00 ${state.token}</b>. Smaller transfers are rejected and the funds are lost.</div>
+  <div class="warn"><span>⚠</span><span><b>Only send ${state.token} on ${n.name}.</b> Any other token or network sent to this address is lost.</span></div>`;
+  $('copyBtn').onclick=async e=>{try{await navigator.clipboard.writeText(addr);e.target.textContent='Copied'}catch(_){e.target.textContent='Copy blocked in preview'}};
+}
+
+/* scenario */
+let timers=[];
+function reset(){timers.forEach(clearTimeout);timers=[];state.network=null;state.token=null;state.note=null;state.revealKey=null;render();$('caption').textContent='Try it: search "usdt" or "arb" in Network.'}
+function play(){
+  reset();
+  const steps=[
+    [300,()=>{setNetwork('ethereum');cap('1/3 · Picks Ethereum. Address stays hidden.')}],
+    [1700,()=>{setToken('USDT');cap('2/3 · Picks USDT. Address shows, with the pair as its title.')}],
+    [3600,()=>{setNetwork('arbitrum');cap('3/3 · Switches to Arbitrum. USDT is cleared, not swapped to USDC. Address hides.')}]
+  ];
+  steps.forEach(([t,f])=>timers.push(setTimeout(f,t)));
+}
+function cap(t){$('caption').textContent=t}
+$('playBtn').onclick=play; $('resetBtn').onclick=reset;
+render();
+</script>
+</body>
+</html>
