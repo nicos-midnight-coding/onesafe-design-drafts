@@ -23,6 +23,12 @@ MVP
 - Update details: routing (9 digits) + full account number + type, bank chip from routing, blocks saving identical details
 - Activity log entries: paused, returned, reactivated / updated
 - Info box on Amount step if still paused: "We'll reactivate it when you send"
+- Payroll flow (same pattern, same modal):
+  - Payroll details (setup): no warning
+  - Team members: warning banner above the list only while the paused member is selected; that row's status column shows a warning icon + "View details" instead of the "Active" pill
+  - Pay amounts: warning inline under the paused member's row
+  - Review: warning above the member list, adds "If you schedule anyway, we'll reactivate it when payroll runs"; same status cell as Team members
+  - Dismiss is per screen, so the warning shows again on Review before money moves
 
 V2
 - Ask the recipient to confirm their own details (email link)
@@ -38,13 +44,16 @@ V2
 | Payer saves new details | New details become the active account; old one kept as inactive record; activity "Bank details updated" |
 | Payer saves details identical to paused ones | Save disabled; inline hint to use Reactivate |
 | Payer continues while paused | Allowed. Amount step shows info box; on Send, reactivate then submit |
+| Paused member selected in payroll | Banner on Team members, inline on Pay amounts, banner on Review; untick member → banner disappears |
+| Payroll scheduled with a paused member | Allowed. Reactivate that account when payroll runs, then pay |
 | Payment returns again after reactivation | Back to `paused` (same rules) |
 | Reactivation API fails | Keep `paused`, show error in modal, payment not submitted |
 
 Sample data only: routing 110000000 is a test number.
 
 ## 6. Open items
-- Payroll details tab: content pending from Nico.
+- Payroll: should dismissing on Team members carry through to Review, or stay per screen (current)?
+- Payroll: for a recurring payroll, does one reactivation cover all future runs?
 - With no Paused label and no Review link, "View details" is the only path to reactivate. Check it's discoverable enough.
 - **Bridge/Infinite:** can we reactivate an external account via API, or does "reactivate" mean creating a new external account with the same details? This decides the whole backend. (Erik / Jorge)
 - Return threshold that triggers a pause: 1 or 2? Provider-driven or ours?
